@@ -1,0 +1,19 @@
+{
+  "name": "eos-pin-game-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "demo_host.js",
+  "scripts": {
+    "start": "node demo_host",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/acxel.io/project/eos-pin-game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}

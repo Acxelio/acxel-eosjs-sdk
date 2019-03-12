@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <!--  -->
+
+    <div id="app"></div>
+
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+    <!-- <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script> -->
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.9/lib/eos.min.js"></script>
+
+    <script src="./env.js"></script>
+    <script src="./eos.js"></script>
+
+    <script type="text/javascript">
+
+      var EOS_HOST = 'api.jungle.alohaeos.com'
+      var EOS_PORT = '443'
+      var EOS_CHAINID = 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473'
+      var EOS_READONLY_HOST = 'api.jungle.alohaeos.com'
+      var EOS_READONLY_PORT = '443'
+      var EOS_READONLY_CHAINID = 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473'
+
+
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.8/dist/vue.js"></script>
+
+    <script type="text/javascript">
+
+      eosInit().then(()=>{
+        let App = new Vue({
+          el: '#app',
+
+          template: `
+            <div>
+              <div class=""
+                v-if="loginInfo"
+                >
+                Status
+              </div>
+              <div class=""
+                v-else
+                >
+                <button
+                  @click="loginByScatter"
+                  >
+                  Login
+                </button>
+              </div>
+            </div>
+          `,
+
+          data: {
+            loginInfo: null,
+
+          },
+          methods: {
+            loginByScatter: async function () {
+              await loginByScatter()
+              await this.updateStatus()
+            },
+
+            updateStatus: async function () {
+              this.loginInfo = await this.getLoginInfo()
+            },
+            async getLoginInfo(force) {
+              await refreshScatterStatus(force);
+
+              let account = getAccountEOSGotBefore()
+              return account
+            },
+          },
+
+          created: async function () {
+            await refreshScatterStatus()
+            await this.updateStatus()
+          },
+        })
+      });
+
+    </script>
+
+
+  </body>
+</html>

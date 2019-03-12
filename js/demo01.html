@@ -19,12 +19,42 @@
 
     <script type="text/javascript">
 
+      // NOTE JungleTestnet
       var EOS_HOST = 'api.jungle.alohaeos.com'
       var EOS_PORT = '443'
       var EOS_CHAINID = 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473'
       var EOS_READONLY_HOST = 'api.jungle.alohaeos.com'
       var EOS_READONLY_PORT = '443'
       var EOS_READONLY_CHAINID = 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473'
+
+      /*
+      // NOTE Mainnet
+      EOS_HOST = 'api.eosbeijing.one'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'api-mainnet.starteos.io'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'api.jeda.one'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'mars.fn.eosbixin.com'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'mainnet.eoscannon.io'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'api-mainnet.eosgravity.com'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      EOS_HOST = 'api.eoslaomao.com'
+      EOS_PORT = '443'
+      EOS_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+
+      EOS_READONLY_HOST = 'api-mainnet.eosgravity.com'
+      EOS_READONLY_PORT = '443'
+      EOS_READONLY_CHAINID = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+      */
 
 
 
@@ -43,7 +73,68 @@
               <div class=""
                 v-if="loginInfo"
                 >
-                Status
+                <button
+                  @click="logoutByScatter"
+                  >
+                  Logout
+                </button>
+
+                <h1>Transfer/Action:</h1>
+
+                <h3>transfer(targetAccount, amount, memo, options)</h3>
+                <p>
+                  transfer('eostaipeiacc', 100, 'thankyou', {})
+
+                  <button
+                    @click="transfer('eostaipeiacc', 100, 'thankyou', {})"
+                    >
+                    transfer
+                  </button>
+                </p>
+
+                <h3>do_action(targetAccount, actionName, data, options)</h3>
+                <p>
+                  do_action(
+                    'eosio.token',
+                    'transfer',
+                    {
+                      from: {{ myAccountName }},
+                      to: 'eostaipeiacc',
+                      quantity: '100.0000 EOS',
+                      memo: 'thankyou',
+                    },
+                    {},
+                  )
+
+                  <button
+                    @click="do_action('eosio.token', 'transfer', {
+                      from: myAccountName,
+                      to: 'eostaipeiacc',
+                      quantity: '100.0000 EOS',
+                      memo: 'thankyou',
+                    }, {})"
+                    >
+                    do_action
+                  </button>
+                </p>
+
+                <h1>Status:</h1>
+
+                <h3>get_account()</h3>
+                <p>
+                  {{ JSON.stringify(loginInfo) }}
+                </p>
+
+                <h3>get_resource()</h3>
+                <p>
+                  {{ JSON.stringify(resource) }}
+                </p>
+
+                <h3>get_balance('eosio.token', 'EOS')</h3>
+                <p>
+                  {{ JSON.stringify(balanceEOS) }}
+                </p>
+
               </div>
               <div class=""
                 v-else
@@ -59,22 +150,43 @@
 
           data: {
             loginInfo: null,
+            resource: null,
+            balanceEOS: null,
 
+          },
+          computed: {
+            myAccountName: function () {
+              if (this.loginInfo) {
+                return this.loginInfo.name
+              }
+            },
           },
           methods: {
             loginByScatter: async function () {
-              await loginByScatter()
+              let result = await loginByScatter()
+              console.log(`loginByScatter`, result)
+
               await this.updateStatus()
+            },
+            logoutByScatter: async function () {
+              let result = await logoutByScatter()
+              console.log(`logoutByScatter`, result)
+
+              await this.updateStatus()
+            },
+            transfer: async function (targetAccount, amount, memo, options) {
+              let result = await transfer(targetAccount, amount, memo, options)
+              console.log('transfer', result)
+            },
+            do_action: async function (targetAccount, actionName, data, options) {
+              let result = await do_action(targetAccount, actionName, data, options)
+              console.log('do_action', result)
             },
 
             updateStatus: async function () {
-              this.loginInfo = await this.getLoginInfo()
-            },
-            async getLoginInfo(force) {
-              await refreshScatterStatus(force);
-
-              let account = getAccountEOSGotBefore()
-              return account
+              this.loginInfo = await get_account()
+              this.resource = await get_resource()
+              this.balanceEOS = await get_balance('eosio.token', 'EOS')
             },
           },
 

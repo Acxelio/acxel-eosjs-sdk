@@ -206,3 +206,53 @@ function normalizePrecisionDefault (val) {
   }
   return val
 }
+
+async function getLoginInfo(force) {
+  await refreshScatterStatus(force);
+
+  let account = getAccountEOSGotBefore()
+  return account
+}
+var get_account = getLoginInfo
+
+async function getBalanceEOS() {
+  let loginInfo = await getLoginInfo()
+  if (loginInfo) {
+    return await getBalanceByAccountName(loginInfo.name)
+  }
+}
+async function get_balance(code_account, symbal) {
+  let loginInfo = await getLoginInfo()
+  if (loginInfo) {
+    let result = await getBalanceByAccountNameFromContract(code_account, loginInfo.name)
+    if (result && result.rows) {
+
+      result = result.rows
+      result = result.filter((item)=>{
+        let balance = item ? item.balance : void 0
+        if (balance) {
+          let parts = balance.split(' ')
+          if (parts && parts.length > 1 && parts[1] === symbal) {
+            return true
+          }
+        }
+      })
+      if (result.length > 0) {
+        return result[0]
+      }
+
+    } else {
+      return
+    }
+  }
+}
+
+async function getBandwidth() {
+  let loginInfo = await getLoginInfo()
+  if (loginInfo) {
+    let val = await getAccountReadOnly(loginInfo.name)
+    return val
+  }
+}
+var get_resource = getBandwidth
+var do_action = doAction

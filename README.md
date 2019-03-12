@@ -1,4 +1,4 @@
-# eos-pin-game
+# EOS JSSDK
 
 ## Step 1: Start localhost
 

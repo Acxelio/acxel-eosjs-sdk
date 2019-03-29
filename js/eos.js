@@ -48,7 +48,9 @@ async function refreshScatterStatus(force) {
   if ((!force) && connected && Date.now() - connectedTimestamp < 5*60*1000) {
     return connected
   }
-  connected = await tryConnectScatter()
+  if (!connected) {
+    connected = await tryConnectScatter()
+  }
   connectedTimestamp = Date.now()
 
   // logD('connecting');

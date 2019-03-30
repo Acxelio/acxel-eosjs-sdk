@@ -49,9 +49,12 @@ async function refreshScatterStatus(force) {
     return connected
   }
   if (!connected) {
-    connected = await tryConnectScatter()
+    let connectedTemp = await tryConnectScatter()
+    if (connectedTemp) {
+      connected = connectedTemp
+      connectedTimestamp = Date.now()
+    }
   }
-  connectedTimestamp = Date.now()
 
   // logD('connecting');
   // If the user does not have Scatter or it is Locked or Closed this will return false;
@@ -60,12 +63,17 @@ async function refreshScatterStatus(force) {
 
   // logD('scatter', scatterAPI.scatter)
 
-  scatter = scatterAPI.scatter;
+  if (scatterAPI.scatter) {
+    scatter = scatterAPI.scatter;
+  }
   // You can pass in any additional options you want into the eosjs reference.
   const eosOptions = { expireInSeconds:60 };
 
   // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
-  eos = scatter.eos(network, Eos, eosOptions);
+  let eosTemp = scatter.eos(network, Eos, eosOptions)
+  if (eosTemp) {
+    eos = eosTemp
+  }
   // eos = Eos(Object.assign({}, eosOptions, {
   //   httpEndpoint:'',
   //   signatureProvider:scatter.eosHook(network),
